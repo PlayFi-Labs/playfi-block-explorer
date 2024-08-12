@@ -38,7 +38,12 @@ async function bootstrap() {
 
   app.useBodyParser("json", { limit: BODY_PARSER_SIZE_LIMIT });
   app.useBodyParser("urlencoded", { limit: BODY_PARSER_SIZE_LIMIT, extended: true });
-  app.enableCors();
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
   app.use(helmet());
   configureApp(app);
   app.enableShutdownHooks();

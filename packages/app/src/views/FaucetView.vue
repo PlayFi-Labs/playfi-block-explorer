@@ -104,7 +104,7 @@ const disabledClearButton = computed(() => {
 const defaultValues = computed<FaucetRequestData>(() => {
   return {
     receivingAddress: "",
-  }
+  };
 });
 
 const form = ref(

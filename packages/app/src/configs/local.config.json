@@ -8,11 +8,13 @@
       ],
       "icon": "/images/icons/playFi.svg",
       "l2ChainId": 270,
-      "l2NetworkName": "Local",
+      "l2NetworkName": "Albireo Local",
       "maintenance": false,
-      "name": "local",
+      "name": "albireo",
       "published": true,
       "rpcUrl": "http://localhost:3050",
+      "verificationApiUrl": "http://localhost:3070",
+      "l2WalletUrl": "http://localhost:3000/assets",
       "baseTokenAddress": "0x000000000000000000000000000000000000800A"
     }
   ]

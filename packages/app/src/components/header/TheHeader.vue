@@ -227,7 +227,7 @@ const socials = [
     }
   }
   .navigation-container {
-    @apply hidden space-x-2 lg:flex xl:space-x-6 ml-6 #{!important};
+    @apply ml-6 hidden space-x-2 lg:flex xl:space-x-6 #{!important};
 
     .dropdown-container {
       @apply relative;

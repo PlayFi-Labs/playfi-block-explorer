@@ -14,10 +14,13 @@
 
 <script lang="ts" setup>
 import { useI18n } from "vue-i18n";
+
 import { CheckIcon } from "@heroicons/vue/outline";
+
 import AddressLink from "@/components/AddressLink.vue";
 import ContentCard from "@/components/ContentCard.vue";
 import Button from "@/components/common/Button.vue";
+
 import type { Address } from "@/types";
 import type { PropType } from "vue";
 defineProps({

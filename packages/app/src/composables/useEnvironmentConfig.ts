@@ -17,6 +17,7 @@ export async function loadEnvironmentConfig(runtimeConfig: RuntimeConfig): Promi
   }
 
   let envConfig: EnvironmentConfig;
+  console.log("appEnvironment: " + runtimeConfig.appEnvironment);
   if (runtimeConfig.appEnvironment === "default") {
     try {
       envConfig = (await import(`../configs/${HYPERCHAIN_CONFIG_NAME}.config.json`)).default;

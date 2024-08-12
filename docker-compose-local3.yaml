@@ -1,0 +1,101 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./packages/app/Dockerfile
+    environment:
+      - VITE_APP_ENVIRONMENT=local
+      - NODE_ENV=local
+    ports:
+      - '3010:3010'
+    depends_on:
+      - api
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./packages/worker/Dockerfile
+    environment:
+      - PORT=3001
+      - LOG_LEVEL=verbose
+      - NODE_ENV=local
+      - DATABASE_HOST=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=block-explorer
+      - BLOCKCHAIN_RPC_URL=http://host.docker.internal:${RPC_PORT}
+      - DATA_FETCHER_URL=http://data-fetcher:3040
+      - BATCHES_PROCESSING_POLLING_INTERVAL=1000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  data-fetcher:
+    build:
+      context: .
+      dockerfile: ./packages/data-fetcher/Dockerfile
+    environment:
+      - PORT=3040
+      - LOG_LEVEL=verbose
+      - NODE_ENV=local
+      - BLOCKCHAIN_RPC_URL=http://host.docker.internal:${RPC_PORT}
+    ports:
+      - '3040:3040'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  api:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile
+      target: development-stage
+    command: npm run --prefix packages/api dev:debug
+    environment:
+      - NODE_ENV=local
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/block-explorer
+      - METRICS_PORT=3005
+      - COLLECT_DB_CONNECTION_POOL_METRICS_INTERVAL=10000
+      - PORT=3020
+      - LOG_LEVEL=verbose
+      - LIMITED_PAGINATION_MAX_ITEMS=10000
+      - API_LIMITED_PAGINATION_MAX_ITEMS=1000
+      - DISABLE_API_SCHEMA_DOCS=false
+      - DISABLE_BFF_API_SCHEMA_DOCS=false
+      - DISABLE_EXTERNAL_API=false
+      - DATABASE_STATEMENT_TIMEOUT_MS=90000
+      - CONTRACT_VERIFICATION_API_URL=http://host.docker.internal:3070
+      - NETWORK_NAME=albireo
+      - BASE_TOKEN_SYMBOL=PLAY
+      - BASE_TOKEN_DECIMALS=18
+      - BASE_TOKEN_L1_ADDRESS=0xe441cf0795af14ddb9f7984da85cd36db1b8790d
+      - BASE_TOKEN_ICON_URL=https://3292822671-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FVFwVdZmYLNYAfVYbLIF2%2Fuploads%2FKzjzMTsaq9RNstL8VXcm%2FLogomark%20Black.png?alt=media&token=4654786f-9032-456b-8a8a-2fc13f6e7893
+      - BASE_TOKEN_NAME=Play
+      - ETH_TOKEN_SYMBOL=WETH
+      - ETH_TOKEN_DECIMALS=18
+      - ETH_TOKEN_L2_ADDRESS=0xb5f9e420E53f5a2BBD092BBfca5BEd2cAe3bB132
+      - ETH_TOKEN_ICON_URL=https://assets.coingecko.com/coins/images/279/large/ethereum.png?1698873266
+      - ETH_TOKEN_NAME=Wrapped Ether
+    ports:
+      - '3020:3020'
+    depends_on:
+      - worker
+
+  postgres:
+    image: "postgres:14"
+    logging:
+      driver: none
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=block-explorer
+
+volumes:
+  postgres:
